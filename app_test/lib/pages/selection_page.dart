@@ -4,15 +4,12 @@ import 'package:get/get.dart';
 import '../controllers/chat_controller.dart';
 import '../services/api_service.dart';
 import '../dto/selection_dto.dart';
-import 'chat_bot_page.dart';
+import 'chatbot_page.dart';
+import 'voice_chatbot_page.dart';
 
+// 선택 화면 위젯
 class SelectionPage extends StatelessWidget {
   final chatController = Get.put(ChatController());
-
-  void handleSelection(String option) async {
-    await ApiService.sendSelection(SelectionDTO(option));
-    Get.to(() => ChatBotPage());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +20,26 @@ class SelectionPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => handleSelection('전맹'),
-              child: Text('전맹'),
+              onPressed: () async {
+                try {
+                  await ApiService.sendMessageToServer('텍스트 챗봇');
+                  Get.to(() => ChatBotPage());
+                } catch (e) {
+                  Get.snackbar('Error', 'Failed to send option: $e');
+                }
+              },
+              child: Text('텍스트 챗봇'),
             ),
             ElevatedButton(
-              onPressed: () => handleSelection('약시'),
-              child: Text('약시'),
-            ),
-            ElevatedButton(
-              onPressed: () => handleSelection('일반인'),
-              child: Text('일반인'),
+              onPressed: () async {
+                try {
+                  await ApiService.sendMessageToServer('음성 챗봇');
+                  Get.to(() => VoiceBotPage());
+                } catch (e) {
+                  Get.snackbar('Error', 'Failed to send option: $e');
+                }
+              },
+              child: Text('음성 챗봇'),
             ),
           ],
         ),

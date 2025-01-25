@@ -12,10 +12,10 @@ class ChatController extends GetxController {
     addMessage('You: $message');
 
     // 메시지를 서버로 전송
-    await ApiService.sendMessageToFlask(message);
+    await ApiService.sendMessageToServer(message);
 
     // 서버로부터 메시지 가져오기
-    final messagesFromServer = await ApiService.getMessagesFromFlask();
+    final messagesFromServer = await ApiService.getMessagesFromServer();
     messages.addAll(messagesFromServer);
   }
 }
