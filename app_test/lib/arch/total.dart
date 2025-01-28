@@ -267,8 +267,8 @@ class ChatController extends GetxController {
 
   Future<void> handleMessage(String message) async {
     addMessage('You: $message');
-    await ApiService.sendMessageToFlask(message);
-    final messagesFromServer = await ApiService.getMessagesFromFlask();
+    await ApiService.sendMessageToServer(message);
+    final messagesFromServer = await ApiService.getMessagesFromServer();
     messages.addAll(messagesFromServer);
   }
 }
