@@ -6,7 +6,7 @@ import '../dto/selection_dto.dart';
 class ApiService {
   static const String baseUrl = 'http://127.0.0.1:5000';
 
-  static Future<void> sendMessageToFlask(String message) async {
+  static Future<void> sendMessageToServer(String message) async {
     final url = Uri.parse('$baseUrl/send');
     try {
       final response = await http.post(
@@ -44,7 +44,7 @@ class ApiService {
     }
   }
 
-  static Future<List<String>> getMessagesFromFlask() async {
+  static Future<List<String>> getMessagesFromServer() async {
     final url = Uri.parse('$baseUrl/messages');
     try {
       final response = await http.get(

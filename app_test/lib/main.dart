@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'pages/selection_page.dart';
+import 'package:app_test/pages/splash_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SelectionPage(),
+      // 스플래시 화면을 초기 화면으로 설정
+      home: SplashScreen(),
     );
   }
 }
