@@ -11,11 +11,8 @@ class ChatController extends GetxController {
   Future<void> handleMessage(String message) async {
     addMessage('You: $message');
 
-    // 메시지를 서버로 전송
-    await ApiService.sendMessageToServer(message);
-
-    // 서버로부터 메시지 가져오기
-    final messagesFromServer = await ApiService.getMessagesFromServer();
-    messages.addAll(messagesFromServer);
+    // 메시지를 서버로 보내고, 응답을 받아 직접 추가
+    final responseFromServer = await ApiService.sendMessageToServer(message);
+    messages.add('Bot: ${responseFromServer}');  // 응답을 바로 UI에 추가
   }
 }

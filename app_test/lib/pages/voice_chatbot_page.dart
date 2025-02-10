@@ -10,11 +10,12 @@ class VoiceBotPage extends StatefulWidget {
 }
 
 class _VoiceBotPageState extends State<VoiceBotPage> {
+
   final FlutterTts _flutterTts = FlutterTts();
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false; // 음성 인식 활성 상태
   String _recognizedText = ""; // 인식된 음성 텍스트
-  String _responseText = "안녕하세요. 필요한 물건이 있으신가요?"; // 서버 응답 텍스트
+  String _responseText = "필요한 물건이 있으신가요testse?"; // 서버 응답 텍스트
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _VoiceBotPageState extends State<VoiceBotPage> {
   void _initializeTTS() async {
     await _flutterTts.setLanguage("ko-KR"); // 한국어 설정
     await _flutterTts.setPitch(1.0); // 음성 톤 설정
+    await _flutterTts.setSpeechRate(1.5); // 말하는 속도 설정
   }
 
   Future<void> _speak(String text) async {
@@ -80,23 +82,24 @@ class _VoiceBotPageState extends State<VoiceBotPage> {
     );
   }
 
-  void _stopListening() async {
-    await _speech.stop();
-    setState(() {
-      _isListening = false;
-    });
-  }
+// 멈춤
+  // void _stopListening() async {
+  //   await _speech.stop();
+  //   setState(() {
+  //     _isListening = false;
+  //   });
+  // }
 
   Future<void> _sendToServer(String userMessage) async {
     print("사용자가 입력한 텍스트: $userMessage"); // 사용자가 말한 내용 로그 출력
 
     try {
-      await ApiService.sendMessageToServer(userMessage);
-      final serverMessages = await ApiService.getMessagesFromServer();
+      final serverMessages = await ApiService.sendMessageToServer(userMessage);
+
 
       if (serverMessages.isNotEmpty) {
         setState(() {
-          _responseText = serverMessages.last; // 서버의 마지막 응답 가져오기
+          _responseText = serverMessages; // 이전에는 serverMessages.last 였음
         });
         print("서버 응답: $_responseText"); // 서버 응답 로그 출력
         _speak(_responseText); // 응답 메시지를 음성으로 출력
