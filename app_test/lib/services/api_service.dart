@@ -4,24 +4,31 @@ import 'package:get/get.dart';
 import '../dto/selection_dto.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:5000';
+  static const String baseUrl = 'http://127.0.0.1:8000';
 
-  static Future<void> sendMessageToServer(String message) async {
-    final url = Uri.parse('$baseUrl/send');
+  // 메시지를 서버로 보내고, 바로 응답을 받아 반환하는 함수
+  static Future<String> sendMessageToServer(String message) async {
+    final url = Uri.parse('$baseUrl/message');
+
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'message': message}),
+        body: jsonEncode({'user_input': message}),
       );
 
       if (response.statusCode == 200) {
-        print('Message sent successfully: ${response.body}');
-      } else {
+        final utf8DecodedResponse = utf8.decode(response.bodyBytes);  // UTF-8 디코딩
+        final data = jsonDecode(utf8DecodedResponse);
+        return data['response'];  // GPT 응답 반환
+      } 
+      else {
         Get.snackbar('Error', 'Failed to send message: ${response.statusCode}');
+        return "Error";  // 오류 발생 시 기본값 반환
       }
     } catch (e) {
       Get.snackbar('Error', 'Error sending message: $e');
+      return "Error";  // 네트워크 오류 시 기본값 반환
     }
   }
 
@@ -44,10 +51,11 @@ class ApiService {
     }
   }
 
+// 서버에서 메세지 받는 함수인데 필요없는 듯?
   static Future<List<String>> getMessagesFromServer() async {
-    final url = Uri.parse('$baseUrl/messages');
+    final url = Uri.parse('$baseUrl/message');
     try {
-      final response = await http.get(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
       );

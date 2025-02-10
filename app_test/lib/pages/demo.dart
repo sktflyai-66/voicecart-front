@@ -13,12 +13,12 @@ class ChatBotPage extends StatefulWidget {
 }
 
 class _ChatBotPageState extends State<ChatBotPage> {
-  final ChatController chatController = Get.put(ChatController());
+  final chatController = Get.find<ChatController>();
   late stt.SpeechToText _speech;
   late FlutterTts _flutterTts;
-  bool _isListening = false; // STT 활성 상태
-  bool _isSpeaking = false; // 챗봇이 말하고 있는 중인지 여부
-  String _recognizedText = ""; // STT로 인식된 텍스트
+  bool _isListening = false;       // STT가 활성화되어 있는지 여부
+  bool _isSpeaking = false;        // 챗봇이 TTS로 말하고 있는 중인지 여부
+  String _recognizedText = "";     // STT로 인식된 텍스트
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
     _speech = stt.SpeechToText();
     _flutterTts = FlutterTts();
     _initializeTTS();
-    _startListening();
+    _startListening();  // 앱 시작 시 음성 인식 시작
   }
 
   // TTS 초기화
@@ -35,79 +35,63 @@ class _ChatBotPageState extends State<ChatBotPage> {
     await _flutterTts.setPitch(1.0);
 
     _flutterTts.setCompletionHandler(() {
-      print("TTS 완료. STT 재시작");
+      print("TTS 완료.");
       setState(() {
         _isSpeaking = false;
       });
-      _startListening(); // TTS가 끝나면 STT 자동 시작
+      _startListening();  // TTS가 끝나면 다시 음성 인식 시작
     });
   }
 
-  // 챗봇 응답을 음성으로 출력하는 메소드
+  // 챗봇 응답을 음성으로 출력
   Future<void> _speak(String text) async {
     if (text.isNotEmpty) {
       setState(() {
         _isSpeaking = true;
-        // _isListening = false; // TTS가 말하는 동안 STT 비활성화
       });
       await _flutterTts.speak(text);
     }
   }
 
-  // 음성 인식(STT) 시작
+  // 음성 인식 시작
   void _startListening() async {
     bool available = await _speech.initialize(
-      onError: (error) {
-        print("STT error: $error");
-        Get.snackbar("Error", "음성 인식 오류 발생");
-      },
+      onError: (error) => print("STT error: $error"),
       onStatus: (status) {
         print("STT status: $status");
-        if (status == "notListening") {
-          if (_recognizedText.trim().isNotEmpty) {
-            print("STT 종료 후 서버로 전송: $_recognizedText");
-            _sendVoiceMessage(_recognizedText);
-          } else {
-            print("STT 종료: 인식된 텍스트 없음");
-            _startListening(); // STT 자동 재시작
-          }
+        if (status == "notListening" && _recognizedText.isNotEmpty) {
+          _sendVoiceMessage(_recognizedText); // 음성을 서버로 전송
         }
       },
     );
 
-    if (!available) {
-      Get.snackbar("Error", "음성 인식을 사용할 수 없습니다.");
-      return;
+    if (available) {
+      setState(() {
+        _isListening = true;
+        _recognizedText = "";
+      });
+
+      _speech.listen(
+        onResult: (result) {
+          setState(() {
+            _recognizedText = result.recognizedWords;
+          });
+
+          // 사용자가 말을 하면 채팅창에 바로 표시
+          if (_recognizedText.isNotEmpty) {
+            chatController.addMessage("You: $_recognizedText");
+          }
+        },
+        listenFor: Duration(seconds: 10),
+        pauseFor: Duration(seconds: 2), // 2초 동안 말이 없으면 stop 상태
+        partialResults: true,  // 실시간으로 텍스트 업데이트
+      );
+    } else {
+      Get.snackbar("Error", "음성 인식이 불가능합니다.");
     }
-
-    setState(() {
-      _isListening = true;
-      _recognizedText = "";
-    });
-
-    _speech.listen(
-      onResult: (result) {
-        setState(() {
-          _recognizedText = result.recognizedWords;
-        });
-        print("STT 인식된 텍스트: $_recognizedText");
-
-        // // 사용자가 말을 하면 TTS 중단
-        // if (_isSpeaking && _recognizedText.isNotEmpty) {
-        //   print("사용자 음성 감지: TTS 중단");
-        //   _flutterTts.stop();
-        //   setState(() {
-        //     _isSpeaking = false;
-        //   });
-        // }
-      },
-      listenFor: Duration(seconds: 10),
-      pauseFor: Duration(seconds: 5),
-      partialResults: true,
-    );
   }
 
-  // 음성 인식(STT) 중단
+  // 음성 인식을 중단
   void _stopListening() async {
     await _speech.stop();
     setState(() {
@@ -115,23 +99,21 @@ class _ChatBotPageState extends State<ChatBotPage> {
     });
   }
 
-  // 인식된 음성을 서버로 전송한 후 응답을 받아 처리하는 메소드
+  // 인식된 음성을 서버로 전송
   Future<void> _sendVoiceMessage(String message) async {
-    _stopListening();
-    chatController.addMessage("You: $message");
+    _stopListening(); // 현재 음성 인식을 중단
 
-    try {
-      String response = await ApiService.sendMessageToServer(message);
-      if (response.isNotEmpty && response != "Error") {
-        chatController.addMessage(response); // "Bot: " 제거
-        await _speak(response);
-      } else {
-        chatController.addMessage("서버 응답 오류");
-      }
-    } catch (e) {
-      print("서버 오류: $e");
-      Get.snackbar("Error", "서버에서 응답을 받을 수 없습니다.");
-    }
+    // 사용자의 입력을 즉시 채팅창에 표시 (이미 처리됨)
+    print("사용자 입력: $message");
+
+    // 서버에 메시지 전송
+    String response = await ApiService.sendMessageToServer(message);
+
+    // 서버 응답을 채팅창에 추가
+    chatController.addMessage(response);
+
+    // 응답을 음성으로 출력 후 다시 음성 인식 시작
+    await _speak(response);
   }
 
   @override
@@ -182,7 +164,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
             ),
           ),
           const Divider(height: 1, color: Colors.yellow),
-          // 인식된 텍스트 미리보기 (실시간 디버깅 및 참고용)
+
+          // 실시간 음성 인식된 텍스트 미리보기
           Container(
             padding: const EdgeInsets.all(10),
             child: Text(
@@ -195,3 +178,4 @@ class _ChatBotPageState extends State<ChatBotPage> {
     );
   }
 }
+
