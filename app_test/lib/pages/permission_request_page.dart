@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'voice_chatbot_page.dart';
+import 'mic_icon_page.dart';
 
 class PermissionRequestPage extends StatefulWidget {
   @override
@@ -40,7 +40,7 @@ class _PermissionRequestPageState extends State<PermissionRequestPage> {
   }
 
   void _navigateToVoiceBotPage() {
-    Get.off(() => VoiceBotPage());
+    Get.off(() => MicIconPage());
   }
 
   void _showPermissionError() {
