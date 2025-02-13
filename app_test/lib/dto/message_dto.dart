@@ -1,5 +1,4 @@
- 
-class MessageDTO {
+ class MessageDTO {
   final String message;
 
   MessageDTO(this.message);

@@ -7,7 +7,10 @@ class ChatController extends GetxController {
   void addMessage(String message) {
     messages.add(message);
   }
-
+  
+  void clearMessages() {
+    messages.clear(); // 🔥 메시지 리스트 초기화
+  }
   Future<void> handleMessage(String message) async {
     addMessage('You: $message');
 

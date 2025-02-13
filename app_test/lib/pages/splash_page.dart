@@ -1,22 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:app_test/pages/selection_page.dart';
-import 'package:app_test/style/style.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:app_test/pages/mic_icon_page.dart';
+import 'package:app_test/pages/chatbot_page.dart';
+import 'package:app_test/services/speech_service.dart';
+import 'package:app_test/controllers/chat_controller.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Get.put<ChatController>(ChatController(), permanent: true);
+    _requestPermissions();
+    debugPrint("splash page inistate !!");
+  }
+
+  Future<void> _requestPermissions() async {
+
+  var status = await Permission.microphone.status;
+  
+  if (status.isGranted) {
+    // 이미 권한이 있으면 3초 후 다음 페이지로 이동
+    Get.put<SpeechService>(SpeechService(), permanent: true);
+    debugPrint("============");
+    debugPrint("다음 페이지로 넘어갑니다. status = grant");
+    debugPrint("============");
+    Future.delayed(const Duration(seconds: 3), () {
+      Get.off(() => MicIconPage());
+    });
+  } 
+
+  else {
+    // 권한이 없으면 권한을 요청한다.
+    var newStatus = await Permission.microphone.request();
+    if (newStatus.isGranted) {
+
+      Get.put<SpeechService>(SpeechService(), permanent: true);
+      debugPrint("다음 페이지로 넘어갑니다.");
+      Future.delayed(const Duration(seconds: 3), () {
+        Get.off(() => ChatBotPage());
+      });
+    } else if (newStatus.isDenied) {
+      debugPrint("🚫 마이크 권한이 거부됨");
+      Get.snackbar("권한 필요", "마이크 권한을 허용해야 음성 인식이 가능합니다.");
+    } else if (newStatus.isPermanentlyDenied) {
+      debugPrint("🚨 마이크 권한이 영구적으로 거부됨");
+      openAppSettings(); // 앱 설정으로 이동
+    }
+  }
+}
+
   @override
   Widget build(BuildContext context) {
-    // 3초 후에 SelectionPage로 이동
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() => SelectionPage());
-    });
-
     return Scaffold(
-      backgroundColor: Colors.black, // 배경색
+      backgroundColor: Colors.black,
       body: Center(
         child: Text(
           'VoiceCart',
-          style: AppStyles.titleTextStyle, // 스타일 클래스에서 텍스트 스타일 적용
+          style: TextStyle(
+            color: Colors.yellow,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Cursive',
+          ),
         ),
       ),
     );
