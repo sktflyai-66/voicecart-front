@@ -22,7 +22,7 @@ class SpeechService extends GetxService {
   // 상태 변수
   bool _isListening = false;   // STT 활성 상태
   bool _isSpeaking = false;    // TTS 실행 여부
-  bool _sttErrorOccurred = false; // STT 오류 발생 여부
+  // bool _sttErrorOccurred = false; // STT 오류 발생 여부
 
   // STT 결과 저장
   final RxString recognizedText = ''.obs;
@@ -53,44 +53,50 @@ class SpeechService extends GetxService {
   Future<void> _initializeTTS() async {
     await _flutterTts.setLanguage("ko-KR");
     await _flutterTts.setPitch(1.0);
+    await _flutterTts.setSpeechRate(1.0);
 
     _flutterTts.setStartHandler(() {    // TTS가 음성 합성 시작 시 호출
       _isSpeaking = true;
-      print("끝 setStartHandler ");
+      print("음성 합성 시장 : setStartHandler() ");
     });
 
     _flutterTts.setCompletionHandler(() {   // TTS 음성 출력 완료 시 호출 (음성 합성 종료 완료되었을 때가 아님)
-      print("[setCompltionHandler 끝");
+      print("음성 [합성] 완료 ");
       _isSpeaking = false;
-      startSTT(); // TTS가 끝나면 자동으로 STT 시작
+      // startSTT(); // TTS가 끝나면 자동으로 STT 시작
     });
 
     _flutterTts.setCancelHandler(() {   // TTS 중단 시 호출
-      print("[setCancelHandler 끝");
+      print("TTS 중단!!");
       _isSpeaking = false;
     });
   }
 
-  // ----------------------
   // 2) STT 초기화
-  // ----------------------
   Future<void> _initializeSTT() async {
+
     bool available = await _speech.initialize(
       onError: (error) {
-        print("[SpeechService] STT 오류 발생: $error");
-        _sttErrorOccurred = true;
-        Future.delayed(const Duration(seconds: 2), startSTT);
+          // final errorTime = DateTime.now();
+          // final elapsed = errorTime.difference(_sttStartTime!);
+          // print("STT 총 실행 시간 (오류 발생): ${elapsed.inSeconds}초");
+          // _sttStartTime = null;
+          // _stopSTT();
+          print("[SpeechService] STT 오류 발생: $error");
+          startSTT();
       },
+
       onStatus: (status) {
         print("[SpeechService] STT 상태: $status");
-        if (status == "notListening" && !_sttErrorOccurred) {
-          if (recognizedText.value.trim().isNotEmpty) {
-            sendToServer(recognizedText.value);
-          } else {
-            startSTT();
-          }
+        if (status == "done") {  // 원래는 notlistening인데 바꿈
+          // if (recognizedText.value.trim().isNotEmpty) {
+          //   sendToServer(recognizedText.value);
+          // } 
+          // else {
+          //   // startSTT();
+          // }
         }
-        _sttErrorOccurred = false; // 오류가 해결되면 초기화
+        // _sttErrorOccurred = false; // 오류가 해결되면 초기화
       },
     );
 
@@ -102,14 +108,14 @@ class SpeechService extends GetxService {
   
   // 3) STT 시작 (사용자 음성 듣기)
   void startSTT() {
-    // if (_isListening) {
+    // if (_speech.isListening == true) {
     //   print("[SpeechService] STT 이미 실행 중");
     //   return;
     // }
 
-    if (_isSpeaking) {
-      stopTTS();
-    }
+    // if (_isSpeaking) {
+    //   stopTTS();
+    // }
 
     _isListening = true;
     recognizedText.value = ""; 
@@ -118,18 +124,29 @@ class SpeechService extends GetxService {
     print("================");
     _speech.listen(
       onResult: (result) {
+        // 테스트할때는 여기서 setState((){ })로 recognizedText에 할당했는데, getX써서 안해도 되나?
+
+        stopTTS();  // onResult 콜백함수는 음성이 인식되면 실행되므로 TTS stop
+
         recognizedText.value = result.recognizedWords;
         print("[SpeechService] 인식 중: ${recognizedText.value}");
-      },
-      listenFor: const Duration(seconds: 60),  // 최대 60초 유지
-      pauseFor: const Duration(seconds: 2),
-      partialResults: true,
-      onSoundLevelChange: (level) {
-        if (level < 0.1) {
-          print("[SpeechService] 조용한 상태 감지 -> STT 재시작");
-          Future.delayed(const Duration(seconds: 1), startSTT);
+        if (result.finalResult == true)
+        {
+          print("STT 인식 최종 결과 뜸");
+          sendToServer(recognizedText.value);
+          print("서버에 전송 함!!");
+          startSTT();
         }
       },
+      listenFor: const Duration(minutes: 5),  // 최대 60초 유지
+      pauseFor: const Duration(seconds: 5),  // Duration 최대는 5초임(10초해도 5초임)
+      partialResults: true,
+      // onSoundLevelChange: (level) {
+      //   if (level < 0.1) {
+      //     print("[SpeechService] 조용한 상태 감지 -> STT 재시작");
+      //     Future.delayed(const Duration(seconds: 1), startSTT);
+      //   }
+      // },
     );
   }
 
@@ -158,7 +175,7 @@ class SpeechService extends GetxService {
     _isSpeaking = true;
     print("[SpeechService] TTS 발화: $text");
     await _flutterTts.speak(text);
-    startSTT();
+    // startSTT();
   }
 
   
@@ -170,15 +187,16 @@ class SpeechService extends GetxService {
     print("[SpeechService] TTS 중단");
   }
 
-void moveToChatPage() {
-  if (Get.currentRoute != "/ChatBotPage") {
-    Future.delayed(Duration.zero, () {
-      chatController.clearMessages(); // 기존 메시지 삭제
-      Get.off(() => ChatBotPage());
-    });
+  void moveToChatPage() {
+    if (Get.currentRoute != "/ChatBotPage") {
+      Future.delayed(Duration.zero, () {
+        chatController.clearMessages(); // 기존 메시지 삭제
+        Get.off(() => ChatBotPage());
+      });
+    }
   }
-}
-  
+
+
   // 7) 서버 전송 및 응답 처리
 Future<void> sendToServer(String userMessage) async {
   print("[SpeechService] 사용자 입력: $userMessage");
@@ -190,6 +208,7 @@ Future<void> sendToServer(String userMessage) async {
         // 1번 API: 채팅 메시지 전송
         final response = await ApiService.sendMessageToServer_chat(userMessage);
         print("[SpeechService] 서버 응답: ${response['response']}");
+        print("서버 응답(키워드) : ${response['keyword']}");
 
         // 응답을 RxString 변수에 저장 및 채팅 목록에 추가
         serverResponse.value = response['response'];
@@ -209,28 +228,26 @@ Future<void> sendToServer(String userMessage) async {
       case ApiMode.product:
         // 2번 API: 제품 리포트 요청 
         final reportResponse = await ApiService.getProductReport(userMessage);
-        print("[SpeechService] 제품 리포트 응답: $reportResponse");
+        print("[SpeechService] 제품 리포트 응답: ${reportResponse['product_describe']}");
 
         // 응답 JSON의 "product_describe" 값을 채팅 목록에 추가 및 TTS 실행
         chatController.addMessage(reportResponse["product_describe"]);
         List<dynamic> productIds = reportResponse["product_id"] ;
         
-        // 제품 리포트 내용을 채팅에 추가 및 TTS 실행
-        chatController.addMessage(reportResponse["product_describe"]);
+        // 제품 리포트 내용 TTS 실행
         await ttsspeak(reportResponse["product_describe"]);
 
-        bool validInputReceived = false;
-        int selectedIndex = -1;
-        // 반복해서 사용자에게 안내 메시지를 전달
-        while (!validInputReceived) {
+        bool validInput = false;    // 사용자가 상품 번호를 말했을 때만 true
+        int selectedIndex = -1;   // 사용자가 선택한 상품 번호 인덱스
+
+        // 반복해서 사용자에게 안내 메시지를 전달(수정 해야함 로직 이상한듯?)==============
+        while (!validInput) {
           
           await ttsspeak("""
 아래는 원하시는 키워드에 따른 상품 리스트에 관련한 내용입니다.
 더 자세하게 알고 싶은 상품이 있으시면, 해당 상품의 번호를 말해주세요.
 이전으로 돌아가고 싶으시면, “돌아가기”로 말씀해주세요.
-""");
-          // TTS 음성 출력 완료 딜레이
-          await Future.delayed(const Duration(seconds: 2));
+""".trim());
 
           String spokenText = recognizedText.value.trim();
           print("[SpeechService] 사용자가 말한 내용: $spokenText");
@@ -245,10 +262,10 @@ Future<void> sendToServer(String userMessage) async {
           // 숫자를 말했는지 확인
           int? number = int.tryParse(spokenText);
           if (number != null) {
-            int index = number - 1; // 사용자가 말하는 숫자 범위는 1이상 
+            int index = number - 1; // 사용자가 말하는 숫자 범위는 1이상을 가정함
             if (index >= 0 && index < productIds.length) {
               selectedIndex = index;
-              validInputReceived = true;
+              validInput = true;
             } else {
               await ttsspeak("잘못된 번호입니다. 다시 말씀해주세요.");
             }
@@ -261,7 +278,7 @@ Future<void> sendToServer(String userMessage) async {
         mode = ApiMode.product_detail;
         String selectedProductId = productIds[selectedIndex];
 
-        final productDetail = await ApiService.sendProductSelection(
+        final productDetail = await ApiService.getProductDetail(
           selectedProductId,
           "keyword",      
           "test123",      

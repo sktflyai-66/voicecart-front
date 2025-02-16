@@ -1,3 +1,5 @@
+import 'package:app_test/pages/style_test_page.dart';
+import 'package:app_test/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -5,6 +7,7 @@ import 'package:app_test/pages/mic_icon_page.dart';
 import 'package:app_test/pages/chatbot_page.dart';
 import 'package:app_test/services/speech_service.dart';
 import 'package:app_test/controllers/chat_controller.dart';
+import 'package:app_test/style/style.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -31,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("다음 페이지로 넘어갑니다. status = grant");
     debugPrint("============");
     Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() => MicIconPage());
+      Get.off(() => StyleTestPage());
     });
   } 
 
@@ -43,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Get.put<SpeechService>(SpeechService(), permanent: true);
       debugPrint("다음 페이지로 넘어갑니다.");
       Future.delayed(const Duration(seconds: 3), () {
-        Get.off(() => ChatBotPage());
+        Get.off(() => MicIconPage());
       });
     } else if (newStatus.isDenied) {
       debugPrint("🚫 마이크 권한이 거부됨");
@@ -58,16 +61,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.backgroundColor,
       body: Center(
         child: Text(
           'VoiceCart',
-          style: TextStyle(
-            color: Colors.yellow,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Cursive',
-          ),
+          style: AppTextStyles.mainTitle,
         ),
       ),
     );

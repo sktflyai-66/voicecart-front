@@ -62,7 +62,7 @@ class ApiService {
   }
 
   // 3번 API : /product/detail
-  static Future<Map<String, dynamic>> sendProductSelection(String productId, String keyword, String session) async {
+  static Future<Map<String, dynamic>> getProductDetail(String productId, String keyword, String session) async {
     final url = Uri.parse('$baseUrl/product/detail'); 
     print("post 메서드 사용해서 제품 선택 요청");
     try {
@@ -109,5 +109,28 @@ class ApiService {
       Get.snackbar('Error', 'Error fetching initial text: $e');
       return "Error";
     }
+  }
+
+  // 회원가입 데이터를 전송하는 함수
+  static Future<String> sendSingupToServer(String temp) async {
+    return "test";
+      // final url = Uri.parse('$baseUrl/initial');
+  //   try {
+  //     final response = await http.post(url,
+  //     headers: {'ngrok-skip-browser-warning': 'true'} //ngrox 경고 페이지 우회
+  //     ); 
+  //     if (response.statusCode == 200) {
+  //       final utf8DecodedResponse = utf8.decode(response.bodyBytes);
+  //       final data = jsonDecode(utf8DecodedResponse);
+  //       return data['text'];
+  //     } else {
+  //       Get.snackbar('Error', 'Failed to fetch initial text: ${response.statusCode}');
+  //       return "Error";
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Error fetching initial text: $e');
+  //     return "Error";
+  //   }
+  // }
   }
 }
