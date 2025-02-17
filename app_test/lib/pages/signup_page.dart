@@ -17,20 +17,33 @@ class _SignUpPageState extends State<SignUpPage> {
     {"title": "아래는 사용자 식별 질문입니다.", "content": "기억나는 첫사랑을 말해주세요.", "step": "step2"},
     {"title": "가입을 축하드립니다!", "content": "닉네임을 설정해주세요.", "step": "step3"},
     {"title": "생일을 알려주세요", "content": "적절한 상품을 추천하는데 도움이 됩니다.", "step": "step4"},
+    {"title": "성별을 알려주세요", "content": "성별에 맞는 맞춤형 추천이 가능합니다.", "step": "step5"},
+    {"title": "자주 구매하는 품목을 선택해주세요", "content": "맞춤형 상품을 추천해드립니다.", "step": "step6"},
   ];
 
   Map<String, String> userData = {
-    "user_data_1": "",
-    "user_data_2": "",
-    "user_data_3": "",
-    "user_data_4": "",
+    "step1": "",
+    "step2": "",
+    "step3": "",
+    "step4": "",
+    "step5": "",
+    "step6": "",
   };
 
+  // 단계별 사용자 입력값 처리
   void _nextPage(String step, String value) async {
-    userData[step] = value;
-    await ApiService.sendSingupToServer(value); // 서버에 상용자 입력 정보 전달 구현하기
+    // 유효성 검사 추가
+    if (value.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("입력값을 확인해 주세요.")));
+      return;
+    }
 
-    if (_currentPage < singup_step.length - 1) {    // 다음 페이지로 넘어가기
+    userData[step] = value;
+
+    // 서버로 데이터 전송
+    await ApiService.sendSingupToServer(userData);
+
+    if (_currentPage < singup_step.length - 1) {
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -88,7 +101,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 _currentPage < singup_step.length - 1
                     ? SizedBox()
                     : ElevatedButton(
-                        onPressed: () => print("회원가입 완료!"),
+                        onPressed: () async {
+                          // "완료" 버튼 클릭 시
+                          await ApiService.sendSingupToServer(userData);
+                          Navigator.pushReplacementNamed(context, '/home'); // 홈 화면으로 이동
+                        },
                         style: AppButtonStyles.elevatedButtonStyle,
                         child: Text("완료", style: AppTextStyles.buttonText),
                       ),

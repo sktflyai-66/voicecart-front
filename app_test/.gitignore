@@ -43,3 +43,36 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android 빌드 관련 추가
+android/.cxx/
+android/app/.cxx/
+android/app/local.properties
+android/app/debug.keystore
+android/.gradle/
+android/app/build/
+
+# Windows 관련 추가
+windows/flutter/ephemeral/
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugins.cmake
+
+# macOS 관련 추가
+macos/Flutter/ephemeral/
+macos/.gradle/
+macos/.cocoapods/
+
+# Web 관련 추가
+web/.dart_tool/
+web/build/
+
+# Linux 관련 추가
+linux/flutter/ephemeral/
+linux/.cxx/
+linux/build/
+
+# 기타 불필요한 파일 추가
+*.log
+*.lock
+pubspec.lock
+*.iml

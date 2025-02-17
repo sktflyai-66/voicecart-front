@@ -26,7 +26,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
       backgroundColor: AppColors.backgroundColor, 
       appBar: AppBar(
         title: const Text(
-          '맨 위에 텍스트',
+          '상품 추천',
           style: AppTextStyles.mainTitle, 
         ),
         backgroundColor: AppColors.backgroundColor, 

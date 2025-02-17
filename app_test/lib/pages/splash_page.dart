@@ -1,3 +1,4 @@
+import 'package:app_test/pages/signup_page.dart';
 import 'package:app_test/pages/style_test_page.dart';
 import 'package:app_test/style/style.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("다음 페이지로 넘어갑니다. status = grant");
     debugPrint("============");
     Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() => StyleTestPage());
+      Get.off(() => ChatBotPage());
     });
   } 
 
@@ -46,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Get.put<SpeechService>(SpeechService(), permanent: true);
       debugPrint("다음 페이지로 넘어갑니다.");
       Future.delayed(const Duration(seconds: 3), () {
-        Get.off(() => MicIconPage());
+        Get.off(() => ChatBotPage());
       });
     } else if (newStatus.isDenied) {
       debugPrint("🚫 마이크 권한이 거부됨");

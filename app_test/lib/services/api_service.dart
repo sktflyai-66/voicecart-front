@@ -43,7 +43,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'user_message': message,
+          'keyword': message,
           'session_id': 'test123'
         }),
       );
@@ -61,33 +61,33 @@ class ApiService {
     }
   }
 
-  // 3번 API : /product/detail
-  static Future<Map<String, dynamic>> getProductDetail(String productId, String keyword, String session) async {
-    final url = Uri.parse('$baseUrl/product/detail'); 
-    print("post 메서드 사용해서 제품 선택 요청");
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'product_id': productId,
-          'keyword': keyword,
-          'session': session,
-        }),
-      );
-      if (response.statusCode == 200) {
-        final decoded = utf8.decode(response.bodyBytes);
-        final data = jsonDecode(decoded);
-        return data;
-      } else {
-        Get.snackbar('Error', '제품 선택 요청 실패: ${response.statusCode}');
-        throw Exception('제품 선택 요청 실패');
-      }
-    } catch (e) {
-      Get.snackbar('Error', '제품 선택 요청 중 오류: $e');
-      throw e;
-    }
-  }
+  // // 3번 API : /product/detail
+  // static Future<Map<String, dynamic>> getProductDetail(String productId, String keyword, String session) async {
+  //   final url = Uri.parse('$baseUrl/product/detail');
+  //   print("post 메서드 사용해서 제품 선택 요청");
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({
+  //         'product_id': productId,
+  //         'keyword': keyword,
+  //         'session': session,
+  //       }),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final decoded = utf8.decode(response.bodyBytes);
+  //       final data = jsonDecode(decoded);
+  //       return data;
+  //     } else {
+  //       Get.snackbar('Error', '제품 선택 요청 실패: ${response.statusCode}');
+  //       throw Exception('제품 선택 요청 실패');
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', '제품 선택 요청 중 오류: $e');
+  //     throw e;
+  //   }
+  // }
 
   // 서버에서 초기 문장을 가져오는 함수
   static Future<String> getServerText() async {
@@ -112,7 +112,7 @@ class ApiService {
   }
 
   // 회원가입 데이터를 전송하는 함수
-  static Future<String> sendSingupToServer(String temp) async {
+  static Future<String> sendSingupToServer(Map<String, String> temp) async {
     return "test";
       // final url = Uri.parse('$baseUrl/initial');
   //   try {
