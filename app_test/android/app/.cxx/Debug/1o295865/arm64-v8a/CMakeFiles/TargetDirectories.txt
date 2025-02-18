@@ -1,0 +1,2 @@
+C:/Users/qw1/Desktop/Fly_ai_proj/voicecart-front/app_test/android/app/.cxx/Debug/1o295865/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/qw1/Desktop/Fly_ai_proj/voicecart-front/app_test/android/app/.cxx/Debug/1o295865/arm64-v8a/CMakeFiles/rebuild_cache.dir

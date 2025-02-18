@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'mic_icon_page.dart';
 
+// 권한 승인 페이지인데 페이지로 만들 필요는 없는듯?
 class PermissionRequestPage extends StatefulWidget {
   @override
   _PermissionRequestPageState createState() => _PermissionRequestPageState();
