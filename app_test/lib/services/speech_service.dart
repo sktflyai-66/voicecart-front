@@ -1,18 +1,18 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:get/get.dart';
-import 'package:app_test/services/api_service.dart';
-import 'package:app_test/pages/chatbot_page.dart';
 import 'package:app_test/controllers/chat_controller.dart';
-
+import 'package:app_test/services/chat_service.dart';
+import 'package:app_test/services/api_service.dart';
 
 enum ApiMode {chat, product}
 
 class SpeechService extends GetxService {
   final ChatController chatController = Get.find<ChatController>(); // ChatController 가져오기
 
+
   ApiMode mode = ApiMode.chat;    // Api 모드 초기 값은 /chat
-  double _speechRate = 1.0; // TTS 기본 속도
+  double _speechRate = 0.8; // TTS 기본 속도
 
   late stt.SpeechToText _speech;
   late FlutterTts _flutterTts;
@@ -37,20 +37,14 @@ class SpeechService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-
+    print("[SpeechService] 초기화 완료");
     _speech = stt.SpeechToText();
     _flutterTts = FlutterTts();
-
-    
     _initializeTTS();
     _initializeSTT();
-    print("=============");
-    print("Speech_service 초기화완료, stt 시작");
-    print("=============");
-
   }
 
-  // 1) TTS 초기화
+  // TTS 초기화
   Future<void> _initializeTTS() async {
     await _flutterTts.setLanguage("ko-KR");
     await _flutterTts.setPitch(1.0);
@@ -73,31 +67,17 @@ class SpeechService extends GetxService {
     });
   }
 
-  // 2) STT 초기화
+  // STT 초기화
   Future<void> _initializeSTT() async {
 
     bool available = await _speech.initialize(
       onError: (error) {
-          // final errorTime = DateTime.now();
-          // final elapsed = errorTime.difference(_sttStartTime!);
-          // print("STT 총 실행 시간 (오류 발생): ${elapsed.inSeconds}초");
-          // _sttStartTime = null;
-          // _stopSTT();
           print("[SpeechService] STT 오류 발생: $error");
           startSTT();
       },
 
       onStatus: (status) {
         print("[SpeechService] STT 상태: $status");
-        if (status == "done") {  // 원래는 notlistening인데 바꿈
-          // if (recognizedText.value.trim().isNotEmpty) {
-          //   sendToServer(recognizedText.value);
-          // } 
-          // else {
-          //   // startSTT();
-          // }
-        }
-        // _sttErrorOccurred = false; // 오류가 해결되면 초기화
       },
     );
 
@@ -107,26 +87,15 @@ class SpeechService extends GetxService {
   }
 
   
-  // 3) STT 시작 (사용자 음성 듣기)
+  // STT 시작 (사용자 음성 듣기)
   void startSTT() {
-    // if (_speech.isListening == true) {
-    //   print("[SpeechService] STT 이미 실행 중");
-    //   return;
-    // }
-
-    // if (_isSpeaking) {
-    //   stopTTS();
-    // }
 
     _isListening = true;
     recognizedText.value = ""; 
-    print("==================");
-    print("STT Listen 시작 ");
-    print("================");
     _speech.listen(
       onResult: (result) {
 
-        stopTTS();  // onResult 콜백함수는 음성이 인식되면 실행되므로 TTS stop
+        stopTTS();  // onResult 콜백함수는 음성이 인식되면 실행되므로 사용자가 말해서 인식이 시작되면 TTS stop
 
         recognizedText.value = result.recognizedWords;
         print("[SpeechService] 인식 중: ${recognizedText.value}");
@@ -137,9 +106,7 @@ class SpeechService extends GetxService {
               startSTT();
           }
           else{   // 일반 STT 결과일 경우
-            print("STT 인식 최종 결과 뜸");
             sendToServer(recognizedText.value);
-            print("서버에 전송 함!!");
             startSTT();
           }
         }
@@ -147,45 +114,21 @@ class SpeechService extends GetxService {
       listenFor: const Duration(minutes: 1),  // 최대 60초 유지
       pauseFor: const Duration(seconds: 5),  // Duration 최대는 5초임(10초해도 5초임)
       partialResults: true,
-      // onSoundLevelChange: (level) {
-      //   if (level < 0.1) {
-      //     print("[SpeechService] 조용한 상태 감지 -> STT 재시작");
-      //     Future.delayed(const Duration(seconds: 1), startSTT);
-      //   }
-      // },
     );
   }
-
-  // ----------------------
-  // 4) STT 중단
-  // ----------------------
-  // Future<void> stopSTT() async {
-  //   if (!_isListening) return;
-  //   await _speech.stop();
-  //   _isListening = false;
-  //   print("[SpeechService] STT 중단");
-  // }
-
   
-  // 5) TTS 실행 (음성 출력)
+  // TTS 실행 (음성 출력)
   Future<void> ttsspeak(String text) async {
-    print("============");
-    print("TTS 시작 !!");
-    print("===========");
-    if (text.isEmpty) return;
 
-    // if (_isListening) {
-    //   await stopSTT();
-    // }
+    if (text.isEmpty) return;
 
     _isSpeaking = true;
     print("[SpeechService] TTS 발화: $text");
     await _flutterTts.speak(text);
-    // startSTT();
   }
 
   
-  // 6) TTS 중단
+  // TTS 중단
   Future<void> stopTTS() async {
     if (!_isSpeaking) return;
     await _flutterTts.stop();
@@ -193,14 +136,14 @@ class SpeechService extends GetxService {
     print("[SpeechService] TTS 중단");
   }
 
-  void moveToChatPage() {
-    if (Get.currentRoute != "/ChatBotPage") {
-      Future.delayed(Duration.zero, () {
-        chatController.clearMessages(); // 기존 메시지 삭제
-        Get.off(() => ChatBotPage());
-      });
-    }
-  }
+  // void moveToChatPage() {
+  //   if (Get.currentRoute != "/ChatBotPage") {
+  //     Future.delayed(Duration.zero, () {
+  //       chatController.clearMessages(); // 기존 메시지 삭제
+  //       Get.off(() => ChatBotPage());
+  //     });
+  //   }
+  // }
   
   // TTS 속도 조절 함수
   void adjustTTSRate(String command) {
@@ -213,123 +156,56 @@ class SpeechService extends GetxService {
     _flutterTts.setSpeechRate(_speechRate);
     ttsspeak("현재 속도는 $percentage 퍼센트 입니다.");
   }
+  
+  
+  Future<void> sendToServer(String userMessage) async {
 
+    try {
+      switch (mode) {
+        // 1. /chat 엔드포인트
+        case ApiMode.chat:
+          chatController.addMessage("You: $userMessage");
 
-  // 7) 서버 전송 및 응답 처리
-Future<void> sendToServer(String userMessage) async {
-  print("[SpeechService] 사용자 입력: $userMessage");
-  chatController.addMessage("You: $userMessage");
+          final response = await ApiService.sendChatMessage(userMessage);
+          print("[ChatService] 서버 응답: ${response['response']}");
 
-  try {
-    switch (mode) {
+          serverResponse.value = response['response'];
+          chatController.addMessage(response['response']);
+          await ttsspeak(response['response']);
 
-      // 1번 API: 채팅 메시지 전송
-      case ApiMode.chat:
-        final response = await ApiService.sendMessageToServer_chat(userMessage);
-        print("[SpeechService] 서버 응답: ${response['response']}");
-        print("서버 응답(키워드) : ${response['keyword']}");
+          if (response['is_done'] == true) {
+            mode = ApiMode.product;
+          }
+          break;
 
-        // 응답을 RxString 변수에 저장 및 채팅 목록에 추가
-        serverResponse.value = response['response'];
-        chatController.addMessage(response['response']);
-        await ttsspeak(response['response']);
+        // 2. /product 엔드포인트
+        case ApiMode.product:
+          final reportResponse = await ApiService.sendProductRequest(userMessage);
+          print("[ChatService] 제품 리포트 응답: ${reportResponse['product_describe']}");
 
-        // "시작" 메시지 감지 시 페이지 이동
-        if (userMessage.contains("시작")) {
-          moveToChatPage();
-        }
+          chatController.addMessage(reportResponse["response"]);
+          await ttsspeak(reportResponse["product_describe"]);
+          break;
 
-        // is_done == true 일 때 2번 APi로 
-        if (response['is_done'] == true) {
-          mode = ApiMode.product;
-        }
-        break;
-
-      // 2번 API: 제품 리포트 요청
-      case ApiMode.product:
-
-        final reportResponse = await ApiService.getProductReport(userMessage);
-        print("[SpeechService] 제품 리포트 응답: ${reportResponse['product_describe']}");
-
-        // 응답 JSON의 "product_describe" 값을 채팅 목록에 추가 및 TTS 실행
-        chatController.addMessage(reportResponse["response"]);
-        List<dynamic> productIds = reportResponse["product_id"];
-        
-        // 제품 리포트 내용 TTS 실행
-        await ttsspeak(reportResponse["product_describe"]);
-
-        bool validInput = false;    // 사용자가 상품 번호를 말했을 때만 true
-        int selectedIndex = -1;   // 사용자가 선택한 상품 번호 인덱스
-
+      }
+    } catch (e) {
+      Get.snackbar("Error", "서버 응답을 받을 수 없습니다. 에러: $e");
+      print("[ChatService] 서버 요청 중 에러: $e");
     }
   }
 
-  catch (e) {
-    Get.snackbar("Error", "서버 응답을 받을 수 없습니다. 에러: $e");
-    print("[SpeechService] 서버 요청 중 에러: $e");
-    }
-  }
+  // // 회원가입 전용 함수
+  // Future<void> sendSignupRequest(Map<String, String> userData) async {
+
+  //   try {
+  //     final signupResponse = await ApiService.sendSignupData(userData);
+  //     print("[ChatService] 회원가입 응답: ${signupResponse['response']}");
+
+  //     chatController.addMessage(signupResponse["response"]);
+  //     await ttsspeak(signupResponse["response"]);
+  //   } catch (e) {
+  //     Get.snackbar("Error", "회원가입 요청 중 오류 발생: $e");
+  //     print("[ChatService] 회원가입 요청 중 에러: $e");
+  //   }
+  // }
 }
-
-//         // 반복해서 사용자에게 안내 메시지를 전달(수정 해야함 로직 이상한듯?)==============
-// //         while (!validInput) {
-          
-// //           await ttsspeak("""
-// // 아래는 원하시는 키워드에 따른 상품 리스트에 관련한 내용입니다.
-// // 더 자세하게 알고 싶은 상품이 있으시면, 해당 상품의 번호를 말해주세요.
-// // 이전으로 돌아가고 싶으시면, “돌아가기”로 말씀해주세요.
-// // """.trim());
-
-// //           String spokenText = recognizedText.value.trim();
-// //           print("[SpeechService] 사용자가 말한 내용: $spokenText");
-
-// //           // "돌아가기"가 포함되어 있으면 이전 모드로 전환
-// //           if (spokenText.contains("돌아가기")) {
-// //             await ttsspeak("이전으로 돌아갑니다.");
-// //             mode = ApiMode.chat; 
-// //             return;
-// //           }
-
-// //           // 숫자를 말했는지 확인
-// //           int? number = int.tryParse(spokenText);
-// //           if (number != null) {
-// //             int index = number - 1; // 사용자가 말하는 숫자 범위는 1이상을 가정함
-// //             if (index >= 0 && index < productIds.length) {
-// //               selectedIndex = index;
-// //               validInput = true;
-// //             } else {
-// //               await ttsspeak("잘못된 번호입니다. 다시 말씀해주세요.");
-// //             }
-// //           } else {
-// //             await ttsspeak("유효한 번호를 인식하지 못했습니다. 다시 말씀해주세요.");
-// //           }
-// //           recognizedText.value = "";
-// //         }
-//         // 유효한 제품 번호가 입력되면 모드를 제품 상세 모드로 전환
-//         if (selectedIndex >= 0)
-//         {
-//         mode = ApiMode.product_detail;
-//         String selectedProductId = productIds[selectedIndex];
-
-//         final productDetail = await ApiService.getProductDetail(
-//           selectedProductId,
-//           "keyword",      
-//           "test123",      
-//         );
-
-//         print("[SpeechService] 제품 상세 응답: ${productDetail["product_describe"]}");
-//         chatController.addMessage(productDetail["product_describe"]);
-//         await ttsspeak(productDetail["product_describe"]);
-//         break;
-// }
-//       case ApiMode.product_detail:
-//       // 딱히 없어도 되는듯?
-//         break;
-
-//     }
-//   } catch (e) {
-//     Get.snackbar("Error", "서버 응답을 받을 수 없습니다. 에러: $e");
-//     print("[SpeechService] 서버 요청 중 에러: $e");
-//   }
-// }
-// }

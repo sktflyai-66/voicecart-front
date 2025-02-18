@@ -17,6 +17,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint("챗봇페이지 입니다.");
     _speechService.startSTT(); 
   }
 

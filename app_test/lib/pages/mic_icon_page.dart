@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app_test/services/speech_service.dart';
 import 'package:app_test/services/api_service.dart';
-// import 'package:app_test/pages/chatbot_page.dart';
 import 'package:app_test/style/style.dart';
 
 class MicIconPage extends StatefulWidget {
@@ -24,9 +23,9 @@ class _MicIconPageState extends State<MicIconPage> {
   // 서버에서 초기 메시지를 받아와서 TTS로 읽기
   Future<void> _fetchInitialMessage() async {
     try {
-      final responseText = await ApiService.getServerText(); // 서버에서 첫 메시지 요청
-      await _speechService.ttsspeak(responseText); // 첫 메시지를 음성으로 출력
-      _speechService.serverResponse.value = responseText; 
+      final responseText = await ApiService.checkSession(); // 서버에서 첫 메시지 요청
+      await _speechService.ttsspeak(responseText['response']); // 첫 메시지를 음성으로 출력
+      _speechService.serverResponse.value = responseText['response']; // 서버 응답 저장
       
       debugPrint("============");
       debugPrint("_fetchInitalMessage 끝!!!");
