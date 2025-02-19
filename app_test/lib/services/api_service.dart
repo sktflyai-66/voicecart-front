@@ -1,13 +1,22 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'dart:math';
+
+
+Random random = Random();
+
+late int randomInt;
+
+
 
 class ApiService {
-  static const String baseUrl = 'https://strong-sawfish-leading.ngrok-free.app'; //http://3.107.238.79:8000';  
+  
+  static const String baseUrl = 'https://voicecart-server.azurewebsites.net'; //http://3.107.238.79:8000';  
 
   // 1번 API : /chat  
   static Future<Map<String, dynamic>> sendMessageToServer_chat(String message) async {
-    final url = Uri.parse('$baseUrl/chat');
+    final url = Uri.parse('$baseUrl/api/chat');
     print("post 메서드 사용해서 서버로 전송");
     try {
       final response = await http.post(
@@ -15,7 +24,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'user_message': message,
-          'session_id': 'test123'
+          'session_id': randomInt.toString()
         }),
       );
 
@@ -36,7 +45,7 @@ class ApiService {
 
 // 2번 API : /product
   static Future<Map<String, dynamic>> getProductReport(String message) async {
-    final url = Uri.parse('$baseUrl/product');
+    final url = Uri.parse('$baseUrl/api/product');
     print("post 메서드 사용해서 제품 리포트 요청");
     try {
       final response = await http.post(
@@ -44,7 +53,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'keyword': message,
-          'session_id': 'test123'
+          'session_id': randomInt.toString()
         }),
       );
       if (response.statusCode == 200) {

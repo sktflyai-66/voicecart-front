@@ -32,7 +32,6 @@ class SpeechService extends GetxService {
   bool get isListening => _isListening;
   bool get isSpeaking => _isSpeaking;
 
-
   /// 초기화 메서드 (GetX의 onInit)
   @override
   void onInit() {
@@ -228,6 +227,7 @@ Future<void> sendToServer(String userMessage) async {
         final response = await ApiService.sendMessageToServer_chat(userMessage);
         print("[SpeechService] 서버 응답: ${response['response']}");
         print("서버 응답(키워드) : ${response['keyword']}");
+        print("서버 응답(is_done) : ${response['is_done']}");
 
         // 응답을 RxString 변수에 저장 및 채팅 목록에 추가
         serverResponse.value = response['response'];
