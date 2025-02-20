@@ -17,7 +17,6 @@ class _ChatBotPageState extends State<ChatBotPage> {
   @override
   void initState() {
     super.initState();
-    _speechService.startSTT();
     randomInt = random.nextInt(1000);
     chatController.addMessage(randomInt.toString());
   }

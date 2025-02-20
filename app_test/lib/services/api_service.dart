@@ -1,3 +1,4 @@
+import 'package:app_test/controllers/chat_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:get/get.dart';
@@ -38,6 +39,7 @@ class ApiService {
       }
     } catch (e) {
       Get.snackbar('Error', 'Error sending message: $e');
+      ChatController().addMessage('Error: $e');
       print("Error: $e");
       throw Exception('Error sending message: $e');
     }

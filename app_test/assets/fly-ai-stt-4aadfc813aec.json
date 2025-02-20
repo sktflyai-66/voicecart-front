@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "fly-ai-stt",
+  "private_key_id": "4aadfc813aece7af5a2d62dca58e84795fd4bbde",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC9WjPyWTPFWxnI\nC/P0iaFeFcEBplYVFbGcDc69fPGvKYtbw0/HelAMdu6G9ePv7ygzK7Vr/ylmUfib\nSi1co1fEO6TkMPHm/DPXV4PuytOKV5Ex/oGxBSMMioDAxoqzEDhOPat8cdB7Sa7w\nkJ8ofze0OOAkeU1AYbfU00aQW85Ro8C5wqai0wfb33lsrtkAmou2ZV547o06JsUh\nSuGtiIs/vpNABg1Yi4hOopvcYsbKncwK4JwXJ3TuXrWvKdWolOHy2JM4x+MWx4Ka\n9ceRRBXhwscZ1YzrlQ838GjbyAEighBvFYYJaaK0agWjUSsJNkIhQvSk+zaSQpgf\nLvdyiuOdAgMBAAECggEAAVmdLeUiOxfN/4XLhocXTN8VhxboGJoBMBDErO9EsvKY\nsJP+pjNpyJ7QTvKRyr8w+MLj50rL8mw890RTeQKUDs/GNXdg8sYVy3ZNAgMfM2GU\nh45M30SVYKjb/etCoJiYqd50duZVnIwJmVAwgbOuMmrfZVMtxqI89X8BN0sfqWz0\nqA/eOpHqr9d3RiR2HWfxkwTwUs0zoZFala5xHmtp4NrIsB0M13utDWf+02Ald1Fw\nAfFpSueWAWP9kBGviQhykoR5oCvOyAJ7ZrpZ3PJ8KXyEnWbK/Q4WewuWecGt1v1f\nIm41J6yc5eq0DVV5xdy3D7jFC0l8DuyDb/hoffo+/wKBgQD0zT+BFmIGgklYFHMI\nJG+e8GeawpErsA/N7f8emyhlpzsi3URUbYDy1d/cGZBeyE/8rUZDp6IK4bNkrrm9\nVHp4PwxN/Q9Hg2dzOWZWjpCiJDz/im/Q8WvqLTwsPfy9s2YQY3E+Lg98eOzUxguT\nnqPTuYv4nCIlxljNuVcsti0nFwKBgQDGA51OUGmodFO2TefvnPENPn49kJHH8p0R\nDp3chJvI/HkRybWBFLuGRrB1TRauWD62e3FWWFMUw52qm6nRAelyooOkZbC1+SI4\npp8cbxe8U6+oH4PdJJ7aSnNYeWG0ZCRBZFBIw7B7iQ/C9H+rdcSEtmeb+tHL26K1\nH9JwcWj7awKBgQDDF5OFh9YFQ+25sUpfcdI3A3Y94tOY0o412ncX6CVQpe6+AULE\nWiSK4qGuIf1pXBBK2biGkGDWdTrngUvrNBkKHYzr1kJIBtP6AwOo9aMUZPbr3GLy\nTIRpMzWiOKBkekVbyDRmjoSu+RwdEdwGAEalpFiFf8DDBAifoxZzPphLbwKBgQDB\nfPCugMbt01WlczTrH9kvztv+fpDk535xF25L98xeNc58AjT4f/DJwbNVu9Eo5ZPK\nLo9OBxqP1KHw/xCN6idaW9D0yGVHO70jzDT3zNpNrRyc1Ma+RbVvqoZRcrJ1WdFP\nkJ0erRF7dS/QmadTPM2dvLs7YHi2kdTI1eKE+1zRJwKBgGTZUYjIQLE6ZROIrVL0\nn1Go1jCwp4DXgGJVRx4+PKRHbrTicNVNPqoLoTfG1ho9AtSlnFVJN4zejAAlX/lE\njMIVBuo44CejscjIUP3rdnLSSzn16V5xUESCvOqke6uFB0Bqz+zjCpmEppocALfy\nc0upnv1AAVXgAGsvL698uS5J\n-----END PRIVATE KEY-----\n",
+  "client_email": "flyaisttservice@fly-ai-stt.iam.gserviceaccount.com",
+  "client_id": "109222595363550614389",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/flyaisttservice%40fly-ai-stt.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
