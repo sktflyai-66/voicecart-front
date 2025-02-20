@@ -9,7 +9,7 @@ import 'package:app_test/pages/chatbot_page.dart';
 import 'package:app_test/services/speech_service.dart';
 import 'package:app_test/controllers/chat_controller.dart';
 import 'package:app_test/style/style.dart';
-import 'package:app_test/services/touch.dart';
+import 'package:app_test/widgets/gesture_feedback.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("다음 페이지로 넘어갑니다. status = grant");
     debugPrint("============");
     Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() => TouchControlWidget(child: ChatBotPage()));
+      Get.off(() => GestureControlWidget(child: ChatBotPage()));
     });
   } 
 
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Get.put<SpeechService>(SpeechService(), permanent: true);
       debugPrint("다음 페이지로 넘어갑니다.");
       Future.delayed(const Duration(seconds: 3), () {
-        Get.off(() => TouchControlWidget(child: ChatBotPage()));
+        Get.off(() => GestureControlWidget(child: ChatBotPage()));
       });
     } else if (newStatus.isDenied) {
       debugPrint("🚫 마이크 권한이 거부됨");

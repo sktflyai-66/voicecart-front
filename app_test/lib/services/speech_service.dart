@@ -18,7 +18,7 @@ class SpeechService extends GetxService {
   final ChatController chatController = Get.find<ChatController>();
   // 수정: AudioRecorder() -> Record()
   final record = AudioRecorder();
-
+  
   ApiMode mode = ApiMode.chat;
   double _speechRate = 1.0;
   // 현재 속도를 반응형으로 관리
@@ -27,6 +27,9 @@ class SpeechService extends GetxService {
   late FlutterTts _flutterTts;
   bool _isSpeaking = false;
   bool _isRecording = false;
+
+  // 기존 bool _isRecording 대신, 다음과 같이 RxBool 추가:
+  final RxBool isRecordingRx = false.obs;
 
   final RxString recognizedText = ''.obs;
   final RxString serverResponse = ''.obs;
@@ -93,6 +96,7 @@ class SpeechService extends GetxService {
     if (await Permission.microphone.request().isGranted) {
       _isRecording = true;
       recognizedText.value = "";
+      isRecordingRx.value = true; 
       print("실시간 스트리밍 STT 시작");
 
       // record 라이브러리의 스트리밍 모드를 사용하여 오디오 스트림 시작
@@ -136,14 +140,16 @@ _speechToText.streamingRecognize(
       }
     }
   },
-  onDone: () {
-    _isRecording = false;
-    print("[SpeechService] STT 스트리밍 종료됨");
-  },
-  onError: (error) {
-    _isRecording = false;
-    print("[Error] STT 오류 발생: $error");
-  },
+onDone: () {
+  _isRecording = false;
+  isRecordingRx.value = false;
+  print("[SpeechService] STT 스트리밍 종료됨");
+},
+onError: (error) {
+  _isRecording = false;
+  isRecordingRx.value = false;
+  print("[Error] STT 오류 발생: $error");
+},
 );
 
 // 주기적으로 silenceTimeout을 체크하여 강제 종료
@@ -209,12 +215,12 @@ Timer.periodic(Duration(milliseconds: 500), (timer) async{
           break;
         case ApiMode.product:
           final reportResponse = await ApiService.getProductReport(userMessage);
+          chatController.addMessage(reportResponse["response"]);
             ///////////////////////디버깅 용
           chatController.addMessage(reportResponse.toString());
           ///////////////////////
         
-          chatController.addMessage(reportResponse["response"]);
-          await ttsspeak(reportResponse["product_describe"]);
+          await ttsspeak(reportResponse["response"]);
           break;
       }
     } catch (e) {

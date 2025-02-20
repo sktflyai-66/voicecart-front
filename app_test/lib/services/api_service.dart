@@ -54,7 +54,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'keyword': message,
+          'user_message': message,
           'session_id': randomInt.toString()
         }),
       );
