@@ -183,7 +183,7 @@ Timer.periodic(Duration(milliseconds: 500), (timer) async{
 
   // TTS 속도를 조절하는 메서드 추가
   Future<void> updateSpeechRate(double delta) async {
-    _speechRate = (_speechRate + delta).clamp(0.0, 5.0);
+    _speechRate = (_speechRate + delta).clamp(0.3, 10.0);
     currentSpeechRate.value = _speechRate; // Rx 변수 업데이트
     await _flutterTts.setSpeechRate(_speechRate);
     print("TTS 속도 업데이트: $_speechRate");

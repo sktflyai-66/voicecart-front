@@ -70,9 +70,8 @@ class _GestureControlWidgetState extends State<GestureControlWidget> {
     return Stack(
       children: [
         GestureDetector(
-          // --------------------------------
+        
           // 1) 단일 탭 -> STT 토글
-          // --------------------------------
           onTap: () {
             if (!_isSttActive) {
               // STT가 꺼져 있으면 STT 시작
@@ -80,27 +79,17 @@ class _GestureControlWidgetState extends State<GestureControlWidget> {
             } 
           },
 
-          // --------------------------------
-          // 2) 더블 탭 -> TTS 중단
-          // --------------------------------
-          onDoubleTap: () {
-            print("더블 탭: TTS 중단");
-            speechService.stopTTS();
-          },
-
-          // --------------------------------
-          // 3) 세로 드래그 -> TTS 속도 조절
-          // --------------------------------
-          onVerticalDragUpdate: (details) {
-            double sensitivity = 0.05;
-            if (details.delta.dy < 0) {
-              print("화면을 위로 스크롤: 속도 증가");
-              speechService.updateSpeechRate(sensitivity);
-            } else if (details.delta.dy > 0) {
-              print("화면을 아래로 스크롤: 속도 감소");
-              speechService.updateSpeechRate(-sensitivity);
-            }
-          },
+          // // 3) 가로 드래그 -> TTS 속도 조절
+          // onHorizontalDragUpdate : (details) {
+          //   double sensitivity = 0.05;    // 속도 변하는 정도
+          //   if (details.delta.dx > 0) {
+          //     print("화면을 위로 스크롤: 속도 증가");
+          //     speechService.updateSpeechRate(sensitivity);
+          //   } else if (details.delta.dx < 0) {
+          //     print("화면을 아래로 스크롤: 속도 감소");
+          //     speechService.updateSpeechRate(-sensitivity);
+          //   }
+          // },
 
           child: Container(
             color: Colors.transparent, // 터치 감지 영역 확장
@@ -109,29 +98,7 @@ class _GestureControlWidgetState extends State<GestureControlWidget> {
             child: widget.child, // 실제 UI
           ),
         ),
-
-        // --------------------------------
-        // 4) 속도 표시 (오버레이)
-        // --------------------------------
-        Positioned(
-          top: 100,
-          right: 10,
-          child: Obx(
-            () => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                "속도: ${speechService.currentSpeechRate.value.toStringAsFixed(2)}",
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
-
 }
