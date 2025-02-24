@@ -5,6 +5,7 @@ import 'package:app_test/services/api_service.dart';
 import 'package:app_test/services/speech_service.dart';
 import 'package:app_test/style/style.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:math';
 class ChatBotPage extends StatefulWidget {
   @override
@@ -29,16 +30,16 @@ class _ChatBotPageState extends State<ChatBotPage> {
   void initState() {
     super.initState();
     randomInt = Random().nextInt(1000);
-    // 테스트용 메시지 추가
-    chatController.addMessage("You: 안녕하세요");
-    chatController.addMessage("Bot: 반가워요. 무엇을 도와드릴까요?");
-    chatController.addMessage("You: 상품 추천해주세요");
-    chatController.addMessage("Bot: 어떤 종류의 상품을 찾으시나요?");
-    chatController.addMessage("You: 가전제품");
-    chatController.addMessage("Bot: 가전제품 중 어떤 제품을 찾으시나요?");
-    chatController.addMessage("You: 세탁기");
-    chatController.addMessage("Bot: 세탁기 브랜드에는 LG, 삼성 등이 있습니다.");
-    ///////////////////////////////////////////
+    // // 테스트용 메시지 추가
+    // chatController.addMessage("You: 안녕하세요");
+    // chatController.addMessage("Bot: 반가워요. 무엇을 도와드릴까요?");
+    // chatController.addMessage("You: 상품 추천해주세요");
+    // chatController.addMessage("Bot: 어떤 종류의 상품을 찾으시나요?");
+    // chatController.addMessage("You: 가전제품");
+    // chatController.addMessage("Bot: 가전제품 중 어떤 제품을 찾으시나요?");
+    // chatController.addMessage("You: 세탁기");
+    // chatController.addMessage("Bot: 세탁기 브랜드에는 LG, 삼성 등이 있습니다.");
+    // ///////////////////////////////////////////
 
     // 메시지 변화 시 스크롤 자동 하단 이동
     chatController.messages.listen((_) {
@@ -134,7 +135,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                     return Text(
                       _speechService.recognizedText.value.isNotEmpty
                           ? _speechService.recognizedText.value
-                          : "음성을 인식 중입니다...",
+                          : "",
                       style: AppTextStyles.secondaryText,
                       textAlign: TextAlign.center,
                     );
@@ -180,9 +181,18 @@ class _ChatBotPageState extends State<ChatBotPage> {
               onVerticalDragEnd: (details) {
                 print('TTS 조절 드래그 종료. 최종 TTS 속도: ${(_speechService.currentSpeechRate.value * 100).toStringAsFixed(0)}');
                 _speechService.ttsspeak("현재 속도는 ${(_speechService.currentSpeechRate.value).toStringAsFixed(1)}배속입니다.");   // 소수점 1자리까지 배속 안내
+                  Fluttertoast.cancel();  // 이전 토스트 취소
+                  Fluttertoast.showToast(
+                    msg: "현재 속도는 ${(_speechService.currentSpeechRate.value).toStringAsFixed(1)}배속입니다.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.black.withOpacity(0.7),
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                );
               },
               // 실제로 쓸 때는 Container() 비우기
-              child: Container(color: const Color.fromARGB(255, 224, 244, 6).withOpacity(0.2))
+              child: Container(color: const Color.fromARGB(255, 252, 252, 250).withOpacity(0.0))
             ),
           ),
         ],

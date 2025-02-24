@@ -114,13 +114,19 @@ class SpeechService extends GetxService {
           encoding: AudioEncoding.LINEAR16,
           sampleRateHertz: 16000,
           languageCode: 'ko-KR',
-          enableAutomaticPunctuation: true,
+          enableAutomaticPunctuation : false,
+          useEnhanced : true,
+          speechContexts: [
+            SpeechContext(['리스트','구매','일번', '이번', '삼번','사번','쿤달']),     /////////////////////////// 브랜드 DB에서 가져오기
+          ],
+          
         ),
         interimResults: true, // 중간 결과를 실시간으로 받음
+        
       );
 
 DateTime lastSpeechTime = DateTime.now();  // 마지막으로 음성이 감지된 시간
-const Duration silenceTimeout = Duration(seconds: 2); // 1초 동안 말이 없으면 종료
+Duration silenceTimeout = Duration(seconds: 10); // N초 동안 말이 없으면 종료
 _flutterTts.speak("말씀해주세요."); // 사용자에게 음성 안내
 _speechToText.streamingRecognize(
   streamingConfig,
@@ -130,6 +136,7 @@ _speechToText.streamingRecognize(
     for (var result in response.results) {
       if (result.alternatives.isNotEmpty) {
         recognizedText.value = result.alternatives.first.transcript;
+        silenceTimeout = Duration(seconds: 2);
         print("인식된 텍스트: ${recognizedText.value}");
         lastSpeechTime = DateTime.now();  // 새로운 발화가 감지되면 시간 갱신
         if (result.isFinal) {
@@ -203,22 +210,22 @@ Timer.periodic(Duration(milliseconds: 500), (timer) async{
           chatController.addMessage(response['response']);
           await ttsspeak(response['response']);
 
-          ///////////////////////디버깅 용
-          chatController.addMessage(response.toString());
-          ///////////////////////
+          // ///////////////////////디버깅 용
+          // chatController.addMessage(response.toString());
+          // ///////////////////////
           
           if (response['is_done'] == true) {
             print("/product 모드로 전환 : is_done = true");
             mode = ApiMode.product;
-            chatController.addMessage("mode : product 로 바꿉니다.");
+            // chatController.addMessage("mode : product 로 바꿉니다.");
           }
           break;
         case ApiMode.product:
           final reportResponse = await ApiService.getProductReport(userMessage);
           chatController.addMessage(reportResponse["response"]);
-            ///////////////////////디버깅 용
-          chatController.addMessage(reportResponse.toString());
-          ///////////////////////
+          //   ///////////////////////디버깅 용
+          // chatController.addMessage(reportResponse.toString());
+          // ///////////////////////
         
           await ttsspeak(reportResponse["response"]);
           break;
