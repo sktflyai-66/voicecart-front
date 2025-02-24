@@ -12,14 +12,14 @@ import 'dart:async';
 import 'package:path_provider/path_provider.dart'; // 임시 파일 경로 획득용
 
 
-enum ApiMode { chat, product }
+// enum ApiMode { chat, product }   // Api 단일화
 
 class SpeechService extends GetxService {
   final ChatController chatController = Get.find<ChatController>();
   // 수정: AudioRecorder() -> Record()
   final record = AudioRecorder();
   
-  ApiMode mode = ApiMode.chat;
+  // ApiMode mode = ApiMode.chat;   // Api 단일화
   double _speechRate = 1.0;
   // 현재 속도를 반응형으로 관리
   final RxDouble currentSpeechRate = 1.0.obs;
@@ -117,7 +117,7 @@ class SpeechService extends GetxService {
           enableAutomaticPunctuation : false,
           useEnhanced : true,
           speechContexts: [
-            SpeechContext(['리스트','구매','일번', '이번', '삼번','사번','쿤달']),     /////////////////////////// 브랜드 DB에서 가져오기
+            SpeechContext(['리스트','구매', '일번', '이번', '삼번','사번','쿤달']),     /////////////////////////// 브랜드 DB에서 가져오기
           ],
           
         ),
@@ -202,34 +202,34 @@ Timer.periodic(Duration(milliseconds: 500), (timer) async{
     chatController.addMessage("You: $userMessage");
 
     try {
-      switch (mode) {
-        case ApiMode.chat:
+      // switch (mode) {  // Api 단일화 
+      //   case ApiMode.chat:   // Api 단일화
           final response = await ApiService.sendMessageToServer_chat(userMessage);
           print(response);
           serverResponse.value = response['response'];
           chatController.addMessage(response['response']);
           await ttsspeak(response['response']);
 
-          // ///////////////////////디버깅 용
-          // chatController.addMessage(response.toString());
-          // ///////////////////////
-          
-          if (response['is_done'] == true) {
-            print("/product 모드로 전환 : is_done = true");
-            mode = ApiMode.product;
-            // chatController.addMessage("mode : product 로 바꿉니다.");
-          }
-          break;
-        case ApiMode.product:
-          final reportResponse = await ApiService.getProductReport(userMessage);
-          chatController.addMessage(reportResponse["response"]);
-          //   ///////////////////////디버깅 용
-          // chatController.addMessage(reportResponse.toString());
-          // ///////////////////////
+          // ///////////////////////디버깅 용   // Api 단일화
+          // chatController.addMessage(response.toString());    // Api 단일화
+          // ///////////////////////  
+          // Api 단일화
+      //     if (response['is_done'] == true) {
+      //       print("/product 모드로 전환 : is_done = true");
+      //       mode = ApiMode.product;
+      //       // chatController.addMessage("mode : product 로 바꿉니다.");
+      //     }
+      //     break;
+      //   case ApiMode.product:
+      //     final reportResponse = await ApiService.getProductReport(userMessage);
+      //     chatController.addMessage(reportResponse["response"]);
+      //     //   ///////////////////////디버깅 용
+      //     // chatController.addMessage(reportResponse.toString());
+      //     // ///////////////////////
         
-          await ttsspeak(reportResponse["response"]);
-          break;
-      }
+      //     await ttsspeak(reportResponse["response"]);
+      //     break;
+      // }
     } catch (e) {
       print("[SpeechService] 서버 요청 중 오류: $e");
     }

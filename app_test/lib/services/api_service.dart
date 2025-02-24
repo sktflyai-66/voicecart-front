@@ -17,7 +17,7 @@ class ApiService {
 
   // 1번 API : /chat  
   static Future<Map<String, dynamic>> sendMessageToServer_chat(String message) async {
-    final url = Uri.parse('$baseUrl/api/chat');
+    final url = Uri.parse('$baseUrl/api/v1/chat');
     print("post 메서드 사용해서 서버로 전송");
     try {
       final response = await http.post(
@@ -45,32 +45,32 @@ class ApiService {
     }
   }
 
-// 2번 API : /product
-  static Future<Map<String, dynamic>> getProductReport(String message) async {
-    final url = Uri.parse('$baseUrl/api/product');
-    print("post 메서드 사용해서 제품 리포트 요청");
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'user_message': message,
-          'session_id': randomInt.toString()
-        }),
-      );
-      if (response.statusCode == 200) {
-        final decoded = utf8.decode(response.bodyBytes);
-        final data = jsonDecode(decoded);
-        return data;
-      } else {
-        Get.snackbar('Error', '제품 리포트 요청 실패: ${response.statusCode}');
-        throw Exception('제품 리포트 요청 실패');
-      }
-    } catch (e) {
-      Get.snackbar('Error', '제품 리포트 요청 중 오류: $e');
-      throw e;
-    }
-  }
+// // 2번 API : /product
+//   static Future<Map<String, dynamic>> getProductReport(String message) async {
+//     final url = Uri.parse('$baseUrl/api/product');
+//     print("post 메서드 사용해서 제품 리포트 요청");
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: {'Content-Type': 'application/json'},
+//         body: jsonEncode({
+//           'user_message': message,
+//           'session_id': randomInt.toString()
+//         }),
+//       );
+//       if (response.statusCode == 200) {
+//         final decoded = utf8.decode(response.bodyBytes);
+//         final data = jsonDecode(decoded);
+//         return data;
+//       } else {
+//         Get.snackbar('Error', '제품 리포트 요청 실패: ${response.statusCode}');
+//         throw Exception('제품 리포트 요청 실패');
+//       }
+//     } catch (e) {
+//       Get.snackbar('Error', '제품 리포트 요청 중 오류: $e');
+//       throw e;
+//     }
+//   }
 
   // // 3번 API : /product/detail
   // static Future<Map<String, dynamic>> getProductDetail(String productId, String keyword, String session) async {
