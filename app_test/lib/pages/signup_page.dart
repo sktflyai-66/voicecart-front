@@ -94,7 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   totalSteps: signupSteps.length,
                   title: signupSteps[index]["title"]!,
                   content: signupSteps[index]["content"]!,
-                  onNext: (value) => _handleSpeechResult(value), // ✅ 음성 입력 후 처리
+                  onNext: (value) => _handleSpeechResult(value), // 음성 입력 후 처리
                 );
               },
             ),

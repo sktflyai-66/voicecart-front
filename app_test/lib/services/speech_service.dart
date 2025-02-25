@@ -147,9 +147,9 @@ class SpeechService extends GetxService {
   
   // TTS 속도 조절 함수
   void adjustTTSRate(String command) {
-    if (command.contains("빠르게")) {
+    if (command.contains("빠르게 말해줘")) {
       _speechRate = double.parse((_speechRate + 0.2).toStringAsFixed(1)).clamp(0.5, 2.0);   // 부동 소수점 정밀도 해결
-    } else if (command.contains("느리게")) {
+    } else if (command.contains("느리게 말해줘")) {
       _speechRate = double.parse((_speechRate - 0.2).toStringAsFixed(1)).clamp(0.5, 2.0);
     }
     int percentage = (_speechRate * 100).toInt(); // 퍼센트 변환
@@ -168,6 +168,8 @@ class SpeechService extends GetxService {
 
           final response = await ApiService.sendChatMessage(userMessage);
           print("[ChatService] 서버 응답: ${response['response']}");
+          print("[ChatService] 서버 응답: ${response['keyword']}");
+          print("[ChatService] 서버 응답: ${response['is_done']}");
 
           serverResponse.value = response['response'];
           chatController.addMessage(response['response']);

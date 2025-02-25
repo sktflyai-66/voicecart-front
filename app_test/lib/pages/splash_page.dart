@@ -28,10 +28,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // 세션 ID 가져오고 서버 확인 후 화면 이동
   Future<void> _initializeSession() async {
-    debugPrint("여기여기역");
     // Map<String, dynamic> session_check = await ApiService.checkSession(); // 서버로 세션 확인 요청
     session_check = {"session_check": true};
-    debugPrint("여기여기역abdads");
 
   }
 
