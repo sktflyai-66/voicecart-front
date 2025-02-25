@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 // 색상 테마 정의
 class AppColors {
-  static const Color backgroundColor = Color.fromARGB(255, 7, 83, 159); // 배경
-  static const Color secondaryColor = Color(0xFF0078D7); // 사용자 메시지
-  static const Color botMessageColor = Color(0xFF0055AA); // 봇 메시지 
+  static const Color backgroundColor = Color.fromARGB(255, 8, 8, 8); // 배경
+  static const Color secondaryColor = Color.fromARGB(255, 15, 16, 18); // 사용자 메시지
+  static const Color botMessageColor = Color.fromARGB(255, 41, 33, 33); // 봇 메시지 
   static const Color textColor = Colors.white; // 기본 텍스트 색상
   static const Color buttonColor = Colors.blueAccent; // 버튼 색상
 }
@@ -40,7 +40,7 @@ class AppTextStyles {
   );
 
   static const TextStyle messageStyle = TextStyle(
-    fontSize: 16,
+    fontSize: 18,
     color: AppColors.textColor,
   );
 }
@@ -68,7 +68,7 @@ class ChatBubbleStyles {
       bottomLeft: Radius.circular(4),
       bottomRight: Radius.circular(16),
     ),
-    border: Border.all(color: Colors.white, width: 2.0), // 하얀색 테두리 추가
+    border: Border.all(color: Colors.white, width: 3.0), // 하얀색 테두리 추가
   );
 
   static BoxDecoration chatUserBubbleStyle = BoxDecoration(
@@ -79,6 +79,6 @@ class ChatBubbleStyles {
       bottomLeft: Radius.circular(16),
       bottomRight: Radius.circular(4),
     ),
-    border: Border.all(color: Colors.white, width: 2.0), // 🔥 하얀색 테두리 추가
+    border: Border.all(color: Colors.white, width: 3.0), // 🔥 하얀색 테두리 추가
   );
 }

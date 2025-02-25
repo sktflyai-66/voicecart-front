@@ -18,14 +18,15 @@ class ApiService {
   // 1번 API : /chat  
   static Future<Map<String, dynamic>> sendMessageToServer_chat(String message) async {
     final url = Uri.parse('$baseUrl/api/v1/chat');
-    print("post 메서드 사용해서 서버로 전송");
+    
+    print("post 메서드 사용해서 /api/v1/chat서버로 전송");
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
+          'session_id': randomInt.toString(),
           'user_message': message,
-          'session_id': randomInt.toString()
         }),
       );
 
