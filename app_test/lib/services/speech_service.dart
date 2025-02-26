@@ -136,7 +136,7 @@ _speechToText.streamingRecognize(
     for (var result in response.results) {
       if (result.alternatives.isNotEmpty) {
         recognizedText.value = result.alternatives.first.transcript;
-        silenceTimeout = Duration(milliseconds: 1500);
+        silenceTimeout = Duration(milliseconds: 1000);
         print("인식된 텍스트: ${recognizedText.value}");
         lastSpeechTime = DateTime.now();  // 새로운 발화가 감지되면 시간 갱신
         if (result.isFinal) {

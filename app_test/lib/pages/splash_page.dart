@@ -1,3 +1,4 @@
+import 'package:app_test/pages/mic_page.dart';
 import 'package:app_test/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await prefs.setBool('is_first_time', false);
     } else {
       // 바로 메인 페이지(예: ChatBotPage)로 이동
-      Get.off(() => GestureControlWidget(child: ChatBotPage()));
+      Get.off(() => GestureControlWidget(child: MicIconPage()));
     }
   }
 
