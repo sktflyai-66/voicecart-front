@@ -3,6 +3,7 @@ import 'package:flutter/services.dart'; // HapticFeedback 사용
 import 'package:get/get.dart';
 import 'package:app_test/services/speech_service.dart';
 import 'dart:async';
+import 'package:vibration/vibration.dart';
 
 class GestureControlWidget extends StatefulWidget {
   final Widget child;
@@ -37,7 +38,7 @@ class _GestureControlWidgetState extends State<GestureControlWidget> {
       _isSttActive = true;
     });
 
-    HapticFeedback.lightImpact();
+    Vibration.vibrate(duration: 25);
 
     // 2) STT 시작
     speechService.startSTT();
@@ -50,7 +51,7 @@ class _GestureControlWidgetState extends State<GestureControlWidget> {
         if (!_isSttActive) {
           timer.cancel();
         } else {
-          HapticFeedback.lightImpact();
+           Vibration.vibrate(duration: 25);
         }
       },
     );

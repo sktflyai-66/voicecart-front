@@ -114,7 +114,7 @@ class SpeechService extends GetxService {
           encoding: AudioEncoding.LINEAR16,
           sampleRateHertz: 16000,
           languageCode: 'ko-KR',
-          enableAutomaticPunctuation : false,
+          enableAutomaticPunctuation : true,
           useEnhanced : true,
           speechContexts: [
             SpeechContext(['리스트','구매', '일번', '이번', '삼번','사번','쿤달']),     /////////////////////////// 브랜드 DB에서 가져오기
@@ -136,7 +136,7 @@ _speechToText.streamingRecognize(
     for (var result in response.results) {
       if (result.alternatives.isNotEmpty) {
         recognizedText.value = result.alternatives.first.transcript;
-        silenceTimeout = Duration(milliseconds: 1000);
+        silenceTimeout = Duration(seconds: 1);
         print("인식된 텍스트: ${recognizedText.value}");
         lastSpeechTime = DateTime.now();  // 새로운 발화가 감지되면 시간 갱신
         if (result.isFinal) {
@@ -160,7 +160,7 @@ onError: (error) {
 );
 
 // 주기적으로 silenceTimeout을 체크하여 강제 종료
-Timer.periodic(Duration(milliseconds: 500), (timer) async{
+Timer.periodic(Duration(milliseconds: 300), (timer) async{
   if (_isRecording && DateTime.now().difference(lastSpeechTime) > silenceTimeout) {
     print("[SpeechService] 사용자가 말을 멈춘 것으로 판단하여 STT 종료");
   await record.stop(); // 마이크 입력 중지

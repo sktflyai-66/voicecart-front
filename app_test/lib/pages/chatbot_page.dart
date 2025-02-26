@@ -192,7 +192,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 );
               },
               // 실제로 쓸 때는 Container() 비우기
-              child: Container(color: const Color.fromARGB(255, 252, 252, 250).withOpacity(0.0))
+              child: Container(color: const Color.fromARGB(96, 252, 252, 250).withOpacity(0.3))
             ),
           ),
         ],
